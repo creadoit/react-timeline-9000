@@ -19,6 +19,7 @@ export default class Timebar extends React.Component {
     this.renderBar = this.renderBar.bind(this);
     this.renderTopBar = this.renderTopBar.bind(this);
     this.renderBottomBar = this.renderBottomBar.bind(this);
+    this.renderCenterBar = this.renderCenterBar.bind(this);
   }
 
   componentWillMount() {
@@ -68,6 +69,10 @@ export default class Timebar extends React.Component {
     let res = this.state.resolution.top;
     return this.renderBar({format: this.props.timeFormats.majorLabels[res], type: res});
   }
+
+  renderCenterBar() {
+    return this.renderBar({format: this.props.timeFormats.centerLabels['week'], type: 'week'});
+  }
   /**
    * Renderer for bottom bar.
    * @returns {Object} JSX for bottom menu bar - based of time format & resolution
@@ -99,6 +104,9 @@ export default class Timebar extends React.Component {
         break;
       case 'month':
         inc = pixels_per_min * 60 * 24 * (date.daysInMonth() - offset);
+        break;
+      case 'week':
+        inc = pixels_per_min * 60 * 24 * (7 - offset);
         break;
       case 'day':
         inc = pixels_per_min * 60 * (24 - offset);
@@ -167,6 +175,9 @@ export default class Timebar extends React.Component {
     } else if (resolution.type === 'month') {
       const offset = moment.duration(currentDate.diff(currentDate.clone().startOf('month')));
       addTimeIncrement(offset, 'days', (currentDt, offst) => currentDt.subtract(offst).add(1, 'month'));
+    } else if (resolution.type === 'week') {
+      const offset = moment.duration(currentDate.diff(currentDate.clone().startOf('week')));
+      addTimeIncrement(offset, 'days', (currentDt, offst) => currentDt.subtract(offst).add(1, 'week'));
     } else if (resolution.type === 'day') {
       const offset = moment.duration(currentDate.diff(currentDate.clone().startOf('day')));
       addTimeIncrement(offset, 'hours', (currentDt, offst) => currentDt.subtract(offst).add(1, 'days'));
@@ -186,6 +197,7 @@ export default class Timebar extends React.Component {
   render() {
     const {cursorTime} = this.props;
     const topBarComponent = this.renderTopBar();
+    const centerBarComponent = this.renderCenterBar();
     const bottomBarComponent = this.renderBottomBar();
     const GroupTitleRenderer = this.props.groupTitleRenderer;
 
@@ -213,6 +225,17 @@ export default class Timebar extends React.Component {
               return (
                 <span className={className} key={i.key} style={{width: intToPix(i.size)}}>
                   {topLabel}
+                </span>
+              );
+            })}
+          </div>
+          <div className="rct9k-timebar-inner rct9k-timebar-inner-center">
+            {_.map(centerBarComponent, i => {
+              let className = 'rct9k-timebar-item';
+              if (i.isSelected) className += ' rct9k-timebar-item-selected';
+              return (
+                <span className={className} key={i.key} style={{width: intToPix(i.size)}}>
+                  {i.label}
                 </span>
               );
             })}

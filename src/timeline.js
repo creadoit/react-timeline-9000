@@ -27,9 +27,6 @@ import {DefaultGroupRenderer, DefaultItemRenderer} from './components/renderers'
 import TimelineBody from './components/body';
 import Marker from './components/marker';
 
-// startsWith polyfill for IE11 support
-import 'core-js/fn/string/starts-with';
-
 /**
  * Timeline class
  * @reactProps {!number} items - this is prop1

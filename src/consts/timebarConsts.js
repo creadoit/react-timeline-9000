@@ -24,6 +24,12 @@ export const timebarFormat = {
       long: 'YYYY' //2018
     }
   },
+  centerLabels: {
+    week: {
+      short: 'w',
+      long: 'w'
+    }
+  },
   minorLabels: {
     minute: {
       short: 'mm', //01
