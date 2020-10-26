@@ -1,6 +1,11 @@
 # Change Log
 
-## Unreleased
+## v1.1.4
+### Added
+- Center timeline bar (displaying week number)
+### Fixed
+- Removed IE11 starts-with polyfill to fix issue with nextjs
+
 ## v1.1.2
 ### Added
 - Pass resolution props to timeline
