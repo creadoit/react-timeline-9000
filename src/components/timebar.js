@@ -30,8 +30,14 @@ export default class Timebar extends React.Component {
    * @param {Object} nextProps Props coming in
    */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.top_resolution && nextProps.bottom_resolution) {
-      this.setState({resolution: {top: nextProps.top_resolution, bottom: nextProps.bottom_resolution}});
+    if (nextProps.top_resolution && nextProps.center_resolution && nextProps.bottom_resolution) {
+      this.setState({
+        resolution: {
+          top: nextProps.top_resolution,
+          center: nextProps.center_resolution,
+          bottom: nextProps.bottom_resolution
+        }
+      });
     } else {
       this.guessResolution(nextProps.start, nextProps.end);
     }
@@ -54,11 +60,13 @@ export default class Timebar extends React.Component {
     // 1h -> 3d
     else if (durationSecs <= 24 * 60 * 60 * 3) this.setState({resolution: {top: 'day', bottom: 'hour'}});
     // 1d -> 30d
-    else if (durationSecs <= 30 * 24 * 60 * 60) this.setState({resolution: {top: 'month', bottom: 'day'}});
+    else if (durationSecs <= 30 * 24 * 60 * 60)
+      this.setState({resolution: {top: 'month', center: 'week', bottom: 'day'}});
     //30d -> 1y
-    else if (durationSecs <= 365 * 24 * 60 * 60) this.setState({resolution: {top: 'year', bottom: 'month'}});
+    else if (durationSecs <= 365 * 24 * 60 * 60)
+      this.setState({resolution: {top: 'year', center: 'month', bottom: 'week'}});
     // 1y ->
-    else this.setState({resolution: {top: 'year', bottom: 'year'}});
+    else this.setState({resolution: {top: 'year'}});
   }
 
   /**
@@ -71,7 +79,8 @@ export default class Timebar extends React.Component {
   }
 
   renderCenterBar() {
-    return this.renderBar({format: this.props.timeFormats.centerLabels['week'], type: 'week'});
+    let res = this.state.resolution.center;
+    return this.renderBar({format: this.props.timeFormats.centerLabels[res], type: res});
   }
   /**
    * Renderer for bottom bar.
@@ -215,41 +224,44 @@ export default class Timebar extends React.Component {
         </div>
         <div className="rct9k-timebar-outer" style={{width: this.props.width, paddingLeft: this.props.leftOffset}}>
           <div className="rct9k-timebar-inner rct9k-timebar-inner-top">
-            {_.map(topBarComponent, i => {
-              let topLabel = i.label;
-              if (cursorTime && i.key === topBarCursorKey) {
-                topLabel += ` [${cursorTime}]`;
-              }
-              let className = 'rct9k-timebar-item';
-              if (i.isSelected) className += ' rct9k-timebar-item-selected';
-              return (
-                <span className={className} key={i.key} style={{width: intToPix(i.size)}}>
-                  {topLabel}
-                </span>
-              );
-            })}
+            {topBarComponent &&
+              _.map(topBarComponent, i => {
+                let topLabel = i.label;
+                if (cursorTime && i.key === topBarCursorKey) {
+                  topLabel += ` [${cursorTime}]`;
+                }
+                let className = 'rct9k-timebar-item';
+                if (i.isSelected) className += ' rct9k-timebar-item-selected';
+                return (
+                  <span className={className} key={i.key} style={{width: intToPix(i.size)}}>
+                    {topLabel}
+                  </span>
+                );
+              })}
           </div>
           <div className="rct9k-timebar-inner rct9k-timebar-inner-center">
-            {_.map(centerBarComponent, i => {
-              let className = 'rct9k-timebar-item';
-              if (i.isSelected) className += ' rct9k-timebar-item-selected';
-              return (
-                <span className={className} key={i.key} style={{width: intToPix(i.size)}}>
-                  {i.label}
-                </span>
-              );
-            })}
+            {centerBarComponent &&
+              _.map(centerBarComponent, i => {
+                let className = 'rct9k-timebar-item';
+                if (i.isSelected) className += ' rct9k-timebar-item-selected';
+                return (
+                  <span className={className} key={i.key} style={{width: intToPix(i.size)}}>
+                    {i.label}
+                  </span>
+                );
+              })}
           </div>
           <div className="rct9k-timebar-inner rct9k-timebar-inner-bottom">
-            {_.map(bottomBarComponent, i => {
-              let className = 'rct9k-timebar-item';
-              if (i.isSelected) className += ' rct9k-timebar-item-selected';
-              return (
-                <span className={className} key={i.key} style={{width: intToPix(i.size)}}>
-                  {i.label}
-                </span>
-              );
-            })}
+            {bottomBarComponent &&
+              _.map(bottomBarComponent, i => {
+                let className = 'rct9k-timebar-item';
+                if (i.isSelected) className += ' rct9k-timebar-item-selected';
+                return (
+                  <span className={className} key={i.key} style={{width: intToPix(i.size)}}>
+                    {i.label}
+                  </span>
+                );
+              })}
           </div>
         </div>
       </div>
@@ -265,6 +277,7 @@ Timebar.propTypes = {
   width: PropTypes.number.isRequired,
   leftOffset: PropTypes.number,
   top_resolution: PropTypes.string,
+  center_resolution: PropTypes.string,
   bottom_resolution: PropTypes.string,
   selectedRanges: PropTypes.arrayOf(PropTypes.object), // [start: moment ,end: moment (end)]
   timeFormats: PropTypes.object

@@ -15,6 +15,10 @@ export const timebarFormat = {
       short: 'Do', //1st
       long: 'ddd, LL' //Sun, July 3, 2018
     },
+    week: {
+      short: 'w',
+      long: 'w'
+    },
     month: {
       short: 'MMM', //Jan
       long: 'MMMM YYYY' //January 2018
@@ -25,9 +29,29 @@ export const timebarFormat = {
     }
   },
   centerLabels: {
+    minute: {
+      short: 'mm', //01
+      long: 'HH:mm' //12:01
+    },
+    hour: {
+      short: 'HH', //13
+      long: 'HH:mm' //13:00
+    },
+    day: {
+      short: 'D', //1
+      long: 'ddd Do' //Sun 1st
+    },
     week: {
       short: 'w',
       long: 'w'
+    },
+    month: {
+      short: 'MM', //02
+      long: 'MMMM' //January
+    },
+    year: {
+      short: 'YYYY', //2018
+      long: 'YYYY' //2018
     }
   },
   minorLabels: {
@@ -42,6 +66,10 @@ export const timebarFormat = {
     day: {
       short: 'D', //1
       long: 'ddd Do' //Sun 1st
+    },
+    week: {
+      short: 'w',
+      long: 'w'
     },
     month: {
       short: 'MM', //02
