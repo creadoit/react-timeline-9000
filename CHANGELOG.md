@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.1.5
+### Changed
+- replace Dependencies with peerDependencies
+
 ## v1.1.4
 ### Added
 - Center timeline bar (displaying week number)
