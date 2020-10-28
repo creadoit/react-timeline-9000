@@ -1,15 +1,24 @@
 # React Timeline 9000
 A performance focused timeline component in react
 ## Build Status
-[![Build Status](https://travis-ci.org/BHP-DevHub/react-timeline-9000.svg?branch=master)](https://travis-ci.org/BHP-DevHub/react-timeline-9000)
-[![CodeFactor](https://www.codefactor.io/repository/github/bhp-devhub/react-timeline-9000/badge)](https://www.codefactor.io/repository/github/bhp-devhub/react-timeline-9000)
-[![npm (scoped)](https://img.shields.io/npm/v/react-timeline-9000.svg)](https://www.npmjs.com/package/react-timeline-9000)
+[![npm (scoped)](https://img.shields.io/npm/v/@creadoit/react-timeline-9000.svg)](https://www.npmjs.com/package/@creadoit/react-timeline-9000)
 
 ## Demo
 * http://bhp-react-timeline-9k.s3-website-ap-southeast-2.amazonaws.com/
 
 ## Documentation
 * http://bhp-react-timeline-9k.s3-website-ap-southeast-2.amazonaws.com/docs/
+
+## Install
+
+Add following peer dependencies:
+
+* interactjs ^1.10.0
+* lodash ^4.17.20
+* moment >=2.29
+* react >=16.13
+* react-dom >=16.13
+* react-virtualized ^9.22.2
 
 
 ## Getting Started
