@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.1.6
+### Added
+- Support for React 17
+
 ## v1.1.5
 ### Changed
 - replace Dependencies with peerDependencies

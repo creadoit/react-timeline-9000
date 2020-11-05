@@ -15,31 +15,31 @@ export default class Timebar extends React.Component {
     super(props);
     this.state = {};
 
-    this.guessResolution = this.guessResolution.bind(this);
     this.renderBar = this.renderBar.bind(this);
     this.renderTopBar = this.renderTopBar.bind(this);
     this.renderBottomBar = this.renderBottomBar.bind(this);
     this.renderCenterBar = this.renderCenterBar.bind(this);
   }
 
-  componentWillMount() {
-    this.guessResolution();
+  componentDidMount() {
+    this.setState(Timebar.guessResolution(this.props.start, this.props.end));
   }
+
   /**
    * On new props we check if a resolution is given, and if not we guess one
    * @param {Object} nextProps Props coming in
    */
-  componentWillReceiveProps(nextProps) {
+  static getDerivedStateFromProps(nextProps, state) {
     if (nextProps.top_resolution && nextProps.center_resolution && nextProps.bottom_resolution) {
-      this.setState({
+      return {
         resolution: {
           top: nextProps.top_resolution,
           center: nextProps.center_resolution,
           bottom: nextProps.bottom_resolution
         }
-      });
+      };
     } else {
-      this.guessResolution(nextProps.start, nextProps.end);
+      return Timebar.guessResolution(nextProps.start, nextProps.end);
     }
   }
 
@@ -49,24 +49,18 @@ export default class Timebar extends React.Component {
    * @param {moment} start Start date for the timebar
    * @param {moment} end End date for the timebar
    */
-  guessResolution(start, end) {
-    if (!start || !end) {
-      start = this.props.start;
-      end = this.props.end;
-    }
+  static guessResolution(start, end) {
     const durationSecs = end.diff(start, 'seconds');
     //    -> 1h
-    if (durationSecs <= 60 * 60) this.setState({resolution: {top: 'hour', bottom: 'minute'}});
+    if (durationSecs <= 60 * 60) return {resolution: {top: 'hour', bottom: 'minute'}};
     // 1h -> 3d
-    else if (durationSecs <= 24 * 60 * 60 * 3) this.setState({resolution: {top: 'day', bottom: 'hour'}});
+    else if (durationSecs <= 24 * 60 * 60 * 3) return {resolution: {top: 'day', bottom: 'hour'}};
     // 1d -> 30d
-    else if (durationSecs <= 30 * 24 * 60 * 60)
-      this.setState({resolution: {top: 'month', center: 'week', bottom: 'day'}});
+    else if (durationSecs <= 30 * 24 * 60 * 60) return {resolution: {top: 'month', center: 'week', bottom: 'day'}};
     //30d -> 1y
-    else if (durationSecs <= 365 * 24 * 60 * 60)
-      this.setState({resolution: {top: 'year', center: 'month', bottom: 'week'}});
+    else if (durationSecs <= 365 * 24 * 60 * 60) return {resolution: {top: 'year', center: 'month', bottom: 'week'}};
     // 1y ->
-    else this.setState({resolution: {top: 'year'}});
+    else return {resolution: {top: 'year'}};
   }
 
   /**

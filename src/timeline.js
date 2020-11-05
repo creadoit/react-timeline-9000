@@ -159,7 +159,7 @@ export default class Timeline extends React.Component {
     window.addEventListener('resize', this.updateDimensions);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setTimeMap(nextProps.items, nextProps.startDate, nextProps.endDate);
     // @TODO
     // investigate if we need this, only added to refresh the grid
@@ -823,7 +823,6 @@ export default class Timeline extends React.Component {
 
   render() {
     const {
-      onInteraction,
       groupOffset,
       showCursorTime,
       timebarFormat,

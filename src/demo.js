@@ -37,7 +37,9 @@ export default class DemoTimeline extends Component {
       startDate,
       endDate,
       message: '',
-      timelineMode: TIMELINE_MODES.SELECT | TIMELINE_MODES.DRAG | TIMELINE_MODES.RESIZE
+      timelineMode: TIMELINE_MODES.SELECT | TIMELINE_MODES.DRAG | TIMELINE_MODES.RESIZE,
+      items: [],
+      groups: []
     };
     this.reRender = this.reRender.bind(this);
     this.zoomIn = this.zoomIn.bind(this);
@@ -48,7 +50,7 @@ export default class DemoTimeline extends Component {
     this.toggleResizable = this.toggleResizable.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.reRender();
   }
 
