@@ -687,7 +687,7 @@ export default class Timeline extends React.Component {
 
       //const roundedStartMinutes = Math.round(clickedTime.minute() / this.props.snapMinutes) * this.props.snapMinutes; // I dont know what this does
       let snappedClickedTime = timeSnap(clickedTime, this.props.snapMinutes * 60);
-      rowCallback && rowCallback(e, row, clickedTime, snappedClickedTime);
+      rowCallback && rowCallback(e, Number(row), clickedTime, snappedClickedTime);
     }
   };
 
