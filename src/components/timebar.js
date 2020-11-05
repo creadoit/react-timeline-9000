@@ -2,7 +2,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import _some from 'lodash/some';
+import _map from 'lodash/map';
 import moment from 'moment';
 import {intToPix} from '../utils/commonUtils';
 import {timebarFormat as defaultTimebarFormat} from '../consts/timebarConsts';
@@ -158,7 +159,7 @@ export default class Timebar extends React.Component {
         );
         const labelSize = pixelIncrements < labelSizeLimit ? 'short' : 'long';
         let label = currentDate.format(resolution.format[labelSize]);
-        let isSelected = _.some(selectedRanges, s => {
+        let isSelected = _some(selectedRanges, s => {
           return (
             currentDate.isSameOrAfter(s.start.clone().startOf(resolution.type)) &&
             currentDate.isSameOrBefore(s.end.clone().startOf(resolution.type))
@@ -219,7 +220,7 @@ export default class Timebar extends React.Component {
         <div className="rct9k-timebar-outer" style={{width: this.props.width, paddingLeft: this.props.leftOffset}}>
           <div className="rct9k-timebar-inner rct9k-timebar-inner-top">
             {topBarComponent &&
-              _.map(topBarComponent, i => {
+              _map(topBarComponent, i => {
                 let topLabel = i.label;
                 if (cursorTime && i.key === topBarCursorKey) {
                   topLabel += ` [${cursorTime}]`;
@@ -235,7 +236,7 @@ export default class Timebar extends React.Component {
           </div>
           <div className="rct9k-timebar-inner rct9k-timebar-inner-center">
             {centerBarComponent &&
-              _.map(centerBarComponent, i => {
+              _map(centerBarComponent, i => {
                 let className = 'rct9k-timebar-item';
                 if (i.isSelected) className += ' rct9k-timebar-item-selected';
                 return (
@@ -247,7 +248,7 @@ export default class Timebar extends React.Component {
           </div>
           <div className="rct9k-timebar-inner rct9k-timebar-inner-bottom">
             {bottomBarComponent &&
-              _.map(bottomBarComponent, i => {
+              _map(bottomBarComponent, i => {
                 let className = 'rct9k-timebar-item';
                 if (i.isSelected) className += ' rct9k-timebar-item-selected';
                 return (

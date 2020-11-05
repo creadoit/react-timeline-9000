@@ -1,7 +1,11 @@
 'use strict';
 
 import React from 'react';
-import _ from 'lodash';
+import _map from 'lodash/map';
+import _sortBy from 'lodash/sortBy';
+import _filter from 'lodash/filter';
+import _clone from 'lodash/clone';
+import _find from 'lodash/find';
 import moment from 'moment';
 
 /**
@@ -15,8 +19,8 @@ import moment from 'moment';
 export function rowItemsRenderer(items, vis_start, vis_end, total_width, itemHeight, itemRenderer, selectedItems = []) {
   const start_end_min = vis_end.diff(vis_start, 'minutes');
   const pixels_per_min = total_width / start_end_min;
-  let filtered_items = _.sortBy(
-    _.filter(items, i => {
+  let filtered_items = _sortBy(
+    _filter(items, i => {
       // if end not before window && start not after window
       return !i.end.isBefore(vis_start) && !i.start.isAfter(vis_end);
     }),
@@ -28,7 +32,7 @@ export function rowItemsRenderer(items, vis_start, vis_end, total_width, itemHei
     let lastEnd = null;
     for (let i = filtered_items.length - 1; i >= 0; i--) {
       if (lastEnd === null || filtered_items[i].start >= lastEnd) {
-        let item = _.clone(filtered_items[i]);
+        let item = _clone(filtered_items[i]);
         item.rowOffset = rowOffset;
         displayItems.push(item);
         filtered_items.splice(i, 1);
@@ -37,7 +41,7 @@ export function rowItemsRenderer(items, vis_start, vis_end, total_width, itemHei
     }
     rowOffset++;
   }
-  return _.map(displayItems, i => {
+  return _map(displayItems, i => {
     const {color} = i;
     const Comp = itemRenderer;
     let top = itemHeight * i['rowOffset'];
@@ -79,8 +83,8 @@ export function rowItemsRenderer(items, vis_start, vis_end, total_width, itemHei
 export function rowLayerRenderer(layers, vis_start, vis_end, total_width, itemHeight) {
   const start_end_min = vis_end.diff(vis_start, 'minutes');
   const pixels_per_min = total_width / start_end_min;
-  let filtered_items = _.sortBy(
-    _.filter(layers, i => {
+  let filtered_items = _sortBy(
+    _filter(layers, i => {
       return !i.end.isBefore(vis_start) && !i.start.isAfter(vis_end);
     }),
     i => -i.start.unix()
@@ -91,7 +95,7 @@ export function rowLayerRenderer(layers, vis_start, vis_end, total_width, itemHe
     let lastEnd = null;
     for (let i = filtered_items.length - 1; i >= 0; i--) {
       if (lastEnd === null || filtered_items[i].start >= lastEnd) {
-        let item = _.clone(filtered_items[i]);
+        let item = _clone(filtered_items[i]);
         item.rowOffset = rowOffset;
         displayItems.push(item);
         filtered_items.splice(i, 1);
@@ -100,7 +104,7 @@ export function rowLayerRenderer(layers, vis_start, vis_end, total_width, itemHe
     }
     rowOffset++;
   }
-  return _.map(displayItems, i => {
+  return _map(displayItems, i => {
     const {style, rowNumber} = i;
     let top = itemHeight * i['rowOffset'];
     let item_offset_mins = i.start.diff(vis_start, 'minutes');
@@ -130,7 +134,7 @@ export function rowLayerRenderer(layers, vis_start, vis_end, total_width, itemHe
  */
 export function getNearestRowObject(x, y, topDiv = document) {
   let elementsAtPixel = document.elementsFromPoint(x, y);
-  return _.find(elementsAtPixel, e => {
+  return _find(elementsAtPixel, e => {
     const inDiv = topDiv.contains(e);
     return inDiv && e.hasAttribute('data-row-index');
   });
@@ -189,7 +193,7 @@ export function getTrueBottom(elem) {
  */
 export function getNearestRowNumber(x, y, topDiv = document) {
   let elementsAtPixel = document.elementsFromPoint(x, y);
-  let targetRow = _.find(elementsAtPixel, e => {
+  let targetRow = _find(elementsAtPixel, e => {
     const inDiv = topDiv.contains(e);
     return inDiv && e.hasAttribute('data-row-index');
   });
@@ -203,7 +207,7 @@ export function getNearestRowNumber(x, y, topDiv = document) {
  */
 export function getMaxOverlappingItems(items) {
   let max = 0;
-  let sorted_items = _.sortBy(items, i => -i.start.unix());
+  let sorted_items = _sortBy(items, i => -i.start.unix());
 
   while (sorted_items.length > 0) {
     let lastEnd = null;

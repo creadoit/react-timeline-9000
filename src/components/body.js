@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import {Grid} from 'react-virtualized';
+import Grid from 'react-virtualized/dist/commonjs/Grid';
 
 class TimelineBody extends Component {
   componentDidMount() {

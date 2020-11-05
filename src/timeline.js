@@ -3,13 +3,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import {Grid, AutoSizer, defaultCellRangeRenderer} from 'react-virtualized';
+import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
 import moment from 'moment';
 import interact from 'interactjs';
-import _ from 'lodash';
 
-import {pixToInt, intToPix, sumStyle} from './utils/commonUtils';
+import _throttle from 'lodash/throttle';
+import _isEqual from 'lodash/isEqual';
+import _filter from 'lodash/filter';
+import _groupBy from 'lodash/groupBy';
+import _forEach from 'lodash/forEach';
+import _findIndex from 'lodash/findIndex';
+import _map from 'lodash/map';
+import _find from 'lodash/find';
+
+import {pixToInt, intToPix} from './utils/commonUtils';
 import {
   rowItemsRenderer,
   rowLayerRenderer,
@@ -145,7 +153,7 @@ export default class Timeline extends React.Component {
     this.updateDimensions = this.updateDimensions.bind(this);
     this.grid_ref_callback = this.grid_ref_callback.bind(this);
     this.select_ref_callback = this.select_ref_callback.bind(this);
-    this.throttledMouseMoveFunc = _.throttle(this.throttledMouseMoveFunc.bind(this), 20);
+    this.throttledMouseMoveFunc = _throttle(this.throttledMouseMoveFunc.bind(this), 20);
     this.mouseMoveFunc = this.mouseMoveFunc.bind(this);
     this.getCursor = this.getCursor.bind(this);
 
@@ -176,8 +184,8 @@ export default class Timeline extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     const {timelineMode, selectedItems} = this.props;
-    const selectionChange = !_.isEqual(prevProps.selectedItems, selectedItems);
-    const timelineModeChange = !_.isEqual(prevProps.timelineMode, timelineMode);
+    const selectionChange = !_isEqual(prevProps.selectedItems, selectedItems);
+    const timelineModeChange = !_isEqual(prevProps.timelineMode, timelineMode);
 
     if (timelineModeChange || selectionChange) {
       const canSelect = Timeline.isBitSet(Timeline.TIMELINE_MODES.SELECT, timelineMode);
@@ -212,14 +220,14 @@ export default class Timeline extends React.Component {
     this.itemRowMap = {}; // timeline elements (key) => (rowNo).
     this.rowItemMap = {}; // (rowNo) => timeline elements
     this.rowHeightCache = {}; // (rowNo) => max number of stacked items
-    let visibleItems = _.filter(items, i => {
+    let visibleItems = _filter(items, i => {
       return i.end > startDate && i.start < endDate;
     });
-    let itemRows = _.groupBy(visibleItems, 'row');
-    _.forEach(itemRows, (visibleItems, row) => {
+    let itemRows = _groupBy(visibleItems, 'row');
+    _forEach(itemRows, (visibleItems, row) => {
       const rowInt = parseInt(row);
       if (this.rowItemMap[rowInt] === undefined) this.rowItemMap[rowInt] = [];
-      _.forEach(visibleItems, item => {
+      _forEach(visibleItems, item => {
         this.itemRowMap[item.key] = rowInt;
         this.rowItemMap[rowInt].push(item);
       });
@@ -239,7 +247,7 @@ export default class Timeline extends React.Component {
   itemFromElement(e) {
     const index = e.getAttribute('data-item-index');
     const rowNo = this.itemRowMap[index];
-    const itemIndex = _.findIndex(this.rowItemMap[rowNo], i => i.key == index);
+    const itemIndex = _findIndex(this.rowItemMap[rowNo], i => i.key == index);
     const item = this.rowItemMap[rowNo][itemIndex];
 
     return {index, rowNo, itemIndex, item};
@@ -253,7 +261,7 @@ export default class Timeline extends React.Component {
   getItem(id) {
     // This is quite stupid and shouldn't really be needed
     const rowNo = this.itemRowMap[id];
-    const itemIndex = _.findIndex(this.rowItemMap[rowNo], i => i.key == id);
+    const itemIndex = _findIndex(this.rowItemMap[rowNo], i => i.key == id);
     return this.rowItemMap[rowNo][itemIndex];
   }
 
@@ -275,7 +283,7 @@ export default class Timeline extends React.Component {
    * @param {Object[]} selections Of the form `[[start, end], [start, end], ...]`
    */
   setSelection(selections) {
-    let newSelection = _.map(selections, s => {
+    let newSelection = _map(selections, s => {
       return {start: s[0].clone(), end: s[1].clone()};
     });
     this.setState({selection: newSelection});
@@ -338,7 +346,7 @@ export default class Timeline extends React.Component {
             this.props.selectedItems
           );
 
-          _.forEach(animatedItems, id => {
+          _forEach(animatedItems, id => {
             let domItem = this._gridDomNode.querySelector("span[data-item-index='" + id + "'");
             if (domItem) {
               selections.push([this.getItem(id).start, this.getItem(id).end]);
@@ -367,7 +375,7 @@ export default class Timeline extends React.Component {
             this.props.snapMinutes
           );
 
-          _.forEach(animatedItems, domItem => {
+          _forEach(animatedItems, domItem => {
             const {item} = this.itemFromElement(domItem);
             let itemDuration = item.end.diff(item.start);
             let newPixelOffset = pixToInt(domItem.style.left) + snapDx;
@@ -417,7 +425,7 @@ export default class Timeline extends React.Component {
           let items = [];
 
           // Default, all items move by the same offset during a drag
-          _.forEach(animatedItems, domItem => {
+          _forEach(animatedItems, domItem => {
             const {item, rowNo} = this.itemFromElement(domItem);
 
             let itemDuration = item.end.diff(item.start);
@@ -459,7 +467,7 @@ export default class Timeline extends React.Component {
         })
         .on('resizestart', e => {
           const selected = this.props.onInteraction(Timeline.changeTypes.resizeStart, null, this.props.selectedItems);
-          _.forEach(selected, id => {
+          _forEach(selected, id => {
             let domItem = this._gridDomNode.querySelector("span[data-item-index='" + id + "'");
             if (domItem) {
               domItem.setAttribute('isResizing', 'True');
@@ -495,7 +503,7 @@ export default class Timeline extends React.Component {
             this.props.snapMinutes
           );
 
-          _.forEach(animatedItems, item => {
+          _forEach(animatedItems, item => {
             item.style.width = intToPix(Number(item.getAttribute('initialWidth')) + snappedDw + minimumWidth);
             item.style.webkitTransform = item.style.transform = 'translate(' + snappedDx + 'px, 0px)';
           });
@@ -512,7 +520,7 @@ export default class Timeline extends React.Component {
 
           let durationChange = null;
           // Calculate the default item positions
-          _.forEach(animatedItems, domItem => {
+          _forEach(animatedItems, domItem => {
             let startPixelOffset = pixToInt(domItem.style.left) + dx;
             const {item, rowNo} = this.itemFromElement(domItem);
 
@@ -656,7 +664,7 @@ export default class Timeline extends React.Component {
             let selectedItems = [];
             for (let r = Math.min(topRowNumber, bottomRow); r <= Math.max(topRowNumber, bottomRow); r++) {
               selectedItems.push(
-                ..._.filter(this.rowItemMap[r], i => {
+                ..._filter(this.rowItemMap[r], i => {
                   return i.start.isBefore(endTime) && i.end.isAfter(startTime);
                 })
               );
@@ -748,7 +756,7 @@ export default class Timeline extends React.Component {
         );
       } else {
         const GroupComp = this.props.groupRenderer;
-        let group = _.find(this.props.groups, g => g.id == rowIndex);
+        let group = _find(this.props.groups, g => g.id == rowIndex);
         return (
           <div data-row-index={rowIndex} key={key} style={style} className="rct9k-group">
             <GroupComp group={group} />
