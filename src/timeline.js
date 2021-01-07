@@ -87,7 +87,8 @@ export default class Timeline extends React.Component {
     shallowUpdateCheck: PropTypes.bool,
     forceRedrawFunc: PropTypes.func,
     bottomResolution: PropTypes.string,
-    topResolution: PropTypes.string
+    topResolution: PropTypes.string,
+    restrictDragging: PropTypes.bool
   };
 
   static defaultProps = {
@@ -105,7 +106,8 @@ export default class Timeline extends React.Component {
     shallowUpdateCheck: false,
     forceRedrawFunc: null,
     onItemHover() {},
-    onItemLeave() {}
+    onItemLeave() {},
+    restrictDragging: true
   };
 
   /**
@@ -334,7 +336,7 @@ export default class Timeline extends React.Component {
           enabled: true,
           allowFrom: selectedItemSelector,
           restrict: {
-            restriction: `.${topDivClassId}`,
+            restriction: this.props.restrictDragging ? `.${topDivClassId}` : false,
             elementRect: {left: 0, right: 1, top: 0, bottom: 1}
           }
         })

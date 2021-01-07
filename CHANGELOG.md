@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.1.7
+### Added
+- Prop to enable/disable restriction of dragging item to timeline area
+
 ## v1.1.6
 ### Added
 - Support for React 17

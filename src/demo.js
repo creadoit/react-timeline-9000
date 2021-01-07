@@ -363,6 +363,7 @@ export default class DemoTimeline extends Component {
             itemRenderer={useCustomRenderers ? customItemRenderer : undefined}
             groupRenderer={useCustomRenderers ? customGroupRenderer : undefined}
             groupTitleRenderer={useCustomRenderers ? () => <div>Group title</div> : undefined}
+            restrictDragging={false}
           />
         </Layout.Content>
       </Layout>
