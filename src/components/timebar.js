@@ -56,9 +56,9 @@ export default class Timebar extends React.Component {
     if (durationSecs <= 60 * 60) return {resolution: {top: 'hour', bottom: 'minute'}};
     // 1h -> 3d
     else if (durationSecs <= 24 * 60 * 60 * 3) return {resolution: {top: 'day', bottom: 'hour'}};
-    // 1d -> 30d
-    else if (durationSecs <= 30 * 24 * 60 * 60) return {resolution: {top: 'month', center: 'week', bottom: 'day'}};
-    //30d -> 1y
+    // 1d -> 31d
+    else if (durationSecs <= 31 * 24 * 60 * 60) return {resolution: {top: 'month', center: 'week', bottom: 'day'}};
+    // 31d -> 1y
     else if (durationSecs <= 365 * 24 * 60 * 60) return {resolution: {top: 'year', center: 'month', bottom: 'week'}};
     // 1y ->
     else return {resolution: {top: 'year'}};

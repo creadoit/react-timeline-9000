@@ -87,6 +87,7 @@ export default class Timeline extends React.Component {
     shallowUpdateCheck: PropTypes.bool,
     forceRedrawFunc: PropTypes.func,
     bottomResolution: PropTypes.string,
+    centerResolution: PropTypes.string,
     topResolution: PropTypes.string,
     restrictDragging: PropTypes.bool
   };
@@ -843,6 +844,7 @@ export default class Timeline extends React.Component {
       startDate,
       endDate,
       bottomResolution,
+      centerResolution,
       topResolution
     } = this.props;
 
@@ -850,6 +852,7 @@ export default class Timeline extends React.Component {
     let varTimebarProps = {};
     if (timebarFormat) varTimebarProps['timeFormats'] = timebarFormat;
     if (bottomResolution) varTimebarProps['bottom_resolution'] = bottomResolution;
+    if (centerResolution) varTimebarProps['center_resolution'] = centerResolution;
     if (topResolution) varTimebarProps['top_resolution'] = topResolution;
 
     function columnWidth(width) {
