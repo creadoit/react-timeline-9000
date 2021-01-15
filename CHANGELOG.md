@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.1.8
+### Added
+- Prop centerResolution
+
 ## v1.1.7
 ### Added
 - Prop to enable/disable restriction of dragging item to timeline area
