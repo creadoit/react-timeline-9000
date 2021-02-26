@@ -14,8 +14,17 @@ export function timeSnap(time, snapSeconds) {
     newTime.set('millisecond', 0);
     return newTime;
   }
-  const newUnix = Math.round(time.unix() / snapSeconds) * snapSeconds;
-  return moment(newUnix * 1000);
+
+  const utcOffsetSeconds = time.clone().utcOffset() * 60;
+
+  // eliminate timezone differences by adding timezone offset (can also be negative) to unix timestamp
+  const unSnapped = time.clone().unix() + utcOffsetSeconds;
+  let snapped = Math.round(unSnapped / snapSeconds) * snapSeconds;
+
+  // remove timezone offset to convert back to unix timestamp
+  snapped -= utcOffsetSeconds;
+
+  return moment.unix(snapped);
 }
 
 /**

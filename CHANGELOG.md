@@ -1,4 +1,7 @@
 # Change Log
+## v1.1.13
+### Fixed
+- Snapping ignored timezone and caused snapping offsets
 ## v1.1.11
 ### Fixed
 - Start dragging below available groups (rows)
