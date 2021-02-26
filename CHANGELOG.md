@@ -1,5 +1,7 @@
 # Change Log
-
+## v1.1.11
+### Fixed
+- Start dragging below available groups (rows)
 ## v1.1.8
 ### Added
 - Prop centerResolution

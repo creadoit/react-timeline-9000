@@ -593,7 +593,9 @@ export default class Timeline extends React.Component {
 
           // this._selectBox.start(e.clientX, e.clientY);
           // this._selectBox.start(e.clientX, topRowObj.style.top);
-          this._selectBox.start(e.clientX, nearestRowObject.getBoundingClientRect().y);
+          if (nearestRowObject) {
+            this._selectBox.start(e.clientX, nearestRowObject.getBoundingClientRect().y);
+          }
           // const bottomRow = Number(getNearestRowNumber(left + width, top + height));
         })
         .on('dragmove', e => {
