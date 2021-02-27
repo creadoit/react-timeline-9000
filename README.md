@@ -1,5 +1,5 @@
 # React Timeline 9000
-A performance focused timeline component in react
+A performance focused timeline component in react based on https://github.com/BHP-DevHub/react-timeline-9000
 ## Build Status
 [![npm (scoped)](https://img.shields.io/npm/v/@creadoit/react-timeline-9000.svg)](https://www.npmjs.com/package/@creadoit/react-timeline-9000)
 

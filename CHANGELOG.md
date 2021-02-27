@@ -1,10 +1,18 @@
 # Change Log
+## v1.2.0
+### Added
+- Prop 'selected' for itemRenderer
+### Fixed
+- Only add minimum width to calendar item while resizing if resulting width would be 0
+
 ## v1.1.13
 ### Fixed
 - Snapping ignored timezone and caused snapping offsets
+
 ## v1.1.11
 ### Fixed
 - Start dragging below available groups (rows)
+
 ## v1.1.8
 ### Added
 - Prop centerResolution
