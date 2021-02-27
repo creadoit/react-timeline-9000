@@ -66,7 +66,7 @@ export function rowItemsRenderer(items, vis_start, vis_end, total_width, itemHei
         data-item-index={i.key}
         className={outerClassnames}
         style={{left, width, top, backgroundColor: 'transparent'}}>
-        <Comp key={i.key} item={i} className={compClassnames} style={style} />
+        <Comp key={i.key} item={i} className={compClassnames} style={style} selected={isSelected} />
       </span>
     );
   });
