@@ -507,7 +507,8 @@ export default class Timeline extends React.Component {
           );
 
           _forEach(animatedItems, item => {
-            item.style.width = intToPix(Number(item.getAttribute('initialWidth')) + snappedDw + minimumWidth);
+            const newWidth = Number(item.getAttribute('initialWidth')) + snappedDw;
+            item.style.width = intToPix(newWidth > 0 ? newWidth : minimumWidth);
             item.style.webkitTransform = item.style.transform = 'translate(' + snappedDx + 'px, 0px)';
           });
           e.target.setAttribute('delta-x', dx);
