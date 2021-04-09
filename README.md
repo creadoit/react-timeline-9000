@@ -4,10 +4,10 @@ A performance focused timeline component in react based on https://github.com/BH
 [![npm (scoped)](https://img.shields.io/npm/v/@creadoit/react-timeline-9000.svg)](https://www.npmjs.com/package/@creadoit/react-timeline-9000)
 
 ## Demo
-* http://bhp-react-timeline-9k.s3-website-ap-southeast-2.amazonaws.com/
+* http://react-timeline-9000.s3-website-ap-southeast-2.amazonaws.com/
 
 ## Documentation
-* http://bhp-react-timeline-9k.s3-website-ap-southeast-2.amazonaws.com/docs/
+* http://react-timeline-9000.s3-website-ap-southeast-2.amazonaws.com/docs/
 
 ## Install
 

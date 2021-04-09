@@ -89,7 +89,11 @@ export default class Timeline extends React.Component {
     bottomResolution: PropTypes.string,
     centerResolution: PropTypes.string,
     topResolution: PropTypes.string,
-    restrictDragging: PropTypes.bool
+    interactOptions: PropTypes.shape({
+      draggable: PropTypes.object,
+      pointerEvents: PropTypes.object,
+      resizable: PropTypes.object.isRequired
+    })
   };
 
   static defaultProps = {
@@ -108,7 +112,7 @@ export default class Timeline extends React.Component {
     forceRedrawFunc: null,
     onItemHover() {},
     onItemLeave() {},
-    restrictDragging: true
+    interactOptions: {}
   };
 
   /**
@@ -319,6 +323,11 @@ export default class Timeline extends React.Component {
   };
 
   setUpDragging(canSelect, canDrag, canResize) {
+    // No need to setUpDragging during SSR
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const topDivClassId = `rct9k-id-${this.props.componentId}`;
     const selectedItemSelector = '.rct9k-items-outer-selected';
     if (this._itemInteractable) this._itemInteractable.unset();
@@ -327,7 +336,7 @@ export default class Timeline extends React.Component {
     this._itemInteractable = interact(`.${topDivClassId} .item_draggable`);
     this._selectRectangleInteractable = interact(`.${topDivClassId} .parent-div`);
 
-    this._itemInteractable.on('tap', e => {
+    this._itemInteractable.pointerEvents(this.props.interactOptions.pointerEvents).on('tap', e => {
       this._handleItemRowEvent(e, this.props.onItemClick, this.props.onRowClick);
     });
 
@@ -337,9 +346,10 @@ export default class Timeline extends React.Component {
           enabled: true,
           allowFrom: selectedItemSelector,
           restrict: {
-            restriction: this.props.restrictDragging ? `.${topDivClassId}` : false,
+            restriction: `.${topDivClassId}`,
             elementRect: {left: 0, right: 1, top: 0, bottom: 1}
-          }
+          },
+          ...this.props.interactOptions.draggable
         })
         .on('dragstart', e => {
           let selections = [];
@@ -466,7 +476,8 @@ export default class Timeline extends React.Component {
       this._itemInteractable
         .resizable({
           allowFrom: selectedItemSelector,
-          edges: {left: true, right: true, bottom: false, top: false}
+          edges: {left: true, right: true, bottom: false, top: false},
+          ...this.props.interactOptions.draggable
         })
         .on('resizestart', e => {
           const selected = this.props.onInteraction(Timeline.changeTypes.resizeStart, null, this.props.selectedItems);
@@ -649,7 +660,7 @@ export default class Timeline extends React.Component {
               )
             );
             //Get the start and end time of the selection rectangle
-            left = left - this.props.groupOffset;
+            left = left - topRowLoc.left;
             let startOffset = width > 0 ? left : left + width;
             let endOffset = width > 0 ? left + width : left;
             const startTime = getTimeAtPixel(
@@ -866,8 +877,11 @@ export default class Timeline extends React.Component {
     }
 
     function calculateHeight(height) {
+      if (typeof window === 'undefined') {
+        return 0;
+      }
       // when this function is called for the first time, the timebar is not yet rendered
-      var timebar = document.querySelector(`.rct9k-id-${componentId} .rct9k-timebar`);
+      let timebar = document.querySelector(`.rct9k-id-${componentId} .rct9k-timebar`);
       if (!timebar) {
         return 0;
       }
