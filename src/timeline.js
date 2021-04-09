@@ -89,6 +89,7 @@ export default class Timeline extends React.Component {
     bottomResolution: PropTypes.string,
     centerResolution: PropTypes.string,
     topResolution: PropTypes.string,
+    restrictDragging: PropTypes.bool,
     interactOptions: PropTypes.shape({
       draggable: PropTypes.object,
       pointerEvents: PropTypes.object,
@@ -112,6 +113,7 @@ export default class Timeline extends React.Component {
     forceRedrawFunc: null,
     onItemHover() {},
     onItemLeave() {},
+    restrictDragging: true,
     interactOptions: {}
   };
 
@@ -346,7 +348,7 @@ export default class Timeline extends React.Component {
           enabled: true,
           allowFrom: selectedItemSelector,
           restrict: {
-            restriction: `.${topDivClassId}`,
+            restriction: this.props.restrictDragging ? `.${topDivClassId}` : false,
             elementRect: {left: 0, right: 1, top: 0, bottom: 1}
           },
           ...this.props.interactOptions.draggable
