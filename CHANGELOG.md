@@ -1,4 +1,7 @@
 # Change Log
+## v1.3.1
+### Fixed
+- if prop 'snapBackIfDraggingOutsideBounds' is enabled, snap back to start position if dragging outside of timeline bounds
 ## v1.3.0
 ### Added
 - Prop 'snapBackIfDraggingOutsideBounds' for timeline
