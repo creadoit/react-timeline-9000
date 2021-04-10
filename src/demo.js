@@ -364,6 +364,7 @@ export default class DemoTimeline extends Component {
             groupRenderer={useCustomRenderers ? customGroupRenderer : undefined}
             groupTitleRenderer={useCustomRenderers ? () => <div>Group title</div> : undefined}
             restrictDragging={false}
+            snapBackIfDraggingOutsideBounds={true}
           />
         </Layout.Content>
       </Layout>

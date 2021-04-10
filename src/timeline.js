@@ -90,10 +90,11 @@ export default class Timeline extends React.Component {
     centerResolution: PropTypes.string,
     topResolution: PropTypes.string,
     restrictDragging: PropTypes.bool,
+    snapBackIfDraggingOutsideBounds: PropTypes.bool,
     interactOptions: PropTypes.shape({
       draggable: PropTypes.object,
       pointerEvents: PropTypes.object,
-      resizable: PropTypes.object.isRequired
+      resizable: PropTypes.object
     })
   };
 
@@ -114,6 +115,7 @@ export default class Timeline extends React.Component {
     onItemHover() {},
     onItemLeave() {},
     restrictDragging: true,
+    snapBackIfDraggingOutsideBounds: true,
     interactOptions: {}
   };
 
@@ -150,6 +152,8 @@ export default class Timeline extends React.Component {
     this.state = {selection: [], cursorTime: null};
     this.setTimeMap(this.props.items);
 
+    this.wrapperRef = React.createRef();
+
     this.cellRenderer = this.cellRenderer.bind(this);
     this.rowHeight = this.rowHeight.bind(this);
     this.setTimeMap = this.setTimeMap.bind(this);
@@ -165,6 +169,7 @@ export default class Timeline extends React.Component {
     this.throttledMouseMoveFunc = _throttle(this.throttledMouseMoveFunc.bind(this), 20);
     this.mouseMoveFunc = this.mouseMoveFunc.bind(this);
     this.getCursor = this.getCursor.bind(this);
+    this.isDraggingOutsideBounds = this.isDraggingOutsideBounds.bind(this);
 
     const canSelect = Timeline.isBitSet(Timeline.TIMELINE_MODES.SELECT, this.props.timelineMode);
     const canDrag = Timeline.isBitSet(Timeline.TIMELINE_MODES.DRAG, this.props.timelineMode);
@@ -324,6 +329,21 @@ export default class Timeline extends React.Component {
     this._grid.recomputeGridSize(config);
   };
 
+  isDraggingOutsideBounds = rect => {
+    if (!rect || !this.wrapperRef || !this.wrapperRef.current) {
+      return false;
+    }
+
+    const wrapperRect = this.wrapperRef.current.getBoundingClientRect();
+
+    return (
+      rect.right < wrapperRect.left ||
+      rect.left > wrapperRect.right ||
+      rect.bottom < wrapperRect.top ||
+      rect.top > wrapperRect.bottom
+    );
+  };
+
   setUpDragging(canSelect, canDrag, canResize) {
     // No need to setUpDragging during SSR
     if (typeof window === 'undefined') {
@@ -415,8 +435,24 @@ export default class Timeline extends React.Component {
           this.setSelection(selections);
         })
         .on('dragend', e => {
-          const {item, rowNo} = this.itemFromElement(e.target);
+          function resetStyles(itemHeight) {
+            animatedItems.forEach(domItem => {
+              domItem.style.webkitTransform = domItem.style.transform = 'translate(0px, 0px)';
+              domItem.setAttribute('drag-x', 0);
+              domItem.setAttribute('drag-y', 0);
+              domItem.style['z-index'] = 3;
+              domItem.style['top'] = intToPix(itemHeight * Math.round(pixToInt(domItem.style['top']) / itemHeight));
+              domItem.removeAttribute('isDragging');
+            });
+          }
+
           let animatedItems = this._gridDomNode.querySelectorAll("span[isDragging='True'") || [];
+          if (this.props.snapBackIfDraggingOutsideBounds && this.isDraggingOutsideBounds(e.rect)) {
+            resetStyles(this.props.itemHeight);
+            return;
+          }
+
+          const {item, rowNo} = this.itemFromElement(e.target);
 
           this.setSelection([[item.start, item.end]]);
           this.clearSelection();
@@ -459,17 +495,7 @@ export default class Timeline extends React.Component {
 
           this.props.onInteraction(Timeline.changeTypes.dragEnd, changes, items);
 
-          // Reset the styles
-          animatedItems.forEach(domItem => {
-            domItem.style.webkitTransform = domItem.style.transform = 'translate(0px, 0px)';
-            domItem.setAttribute('drag-x', 0);
-            domItem.setAttribute('drag-y', 0);
-            domItem.style['z-index'] = 3;
-            domItem.style['top'] = intToPix(
-              this.props.itemHeight * Math.round(pixToInt(domItem.style['top']) / this.props.itemHeight)
-            );
-            domItem.removeAttribute('isDragging');
-          });
+          resetStyles(this.props.itemHeight);
 
           this._grid.recomputeGridSize({rowIndex: 0});
         });
@@ -902,7 +928,7 @@ export default class Timeline extends React.Component {
       });
     }
     return (
-      <div className={divCssClass}>
+      <div className={divCssClass} ref={this.wrapperRef}>
         <AutoSizer className="rct9k-autosizer" onResize={this.refreshGrid}>
           {({height, width}) => (
             <div className="parent-div" onMouseMove={this.mouseMoveFunc}>
