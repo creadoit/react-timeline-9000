@@ -1,4 +1,8 @@
 # Change Log
+## v1.3.0
+### Added
+- Prop 'snapBackIfDraggingOutsideBounds' for timeline
+- interactOptions for interactjs
 ## v1.2.0
 ### Added
 - Prop 'selected' for itemRenderer
