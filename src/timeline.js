@@ -152,8 +152,6 @@ export default class Timeline extends React.Component {
     this.state = {selection: [], cursorTime: null};
     this.setTimeMap(this.props.items);
 
-    this.wrapperRef = React.createRef();
-
     this.cellRenderer = this.cellRenderer.bind(this);
     this.rowHeight = this.rowHeight.bind(this);
     this.setTimeMap = this.setTimeMap.bind(this);
@@ -169,7 +167,6 @@ export default class Timeline extends React.Component {
     this.throttledMouseMoveFunc = _throttle(this.throttledMouseMoveFunc.bind(this), 20);
     this.mouseMoveFunc = this.mouseMoveFunc.bind(this);
     this.getCursor = this.getCursor.bind(this);
-    this.isDraggingOutsideBounds = this.isDraggingOutsideBounds.bind(this);
 
     const canSelect = Timeline.isBitSet(Timeline.TIMELINE_MODES.SELECT, this.props.timelineMode);
     const canDrag = Timeline.isBitSet(Timeline.TIMELINE_MODES.DRAG, this.props.timelineMode);
@@ -329,21 +326,6 @@ export default class Timeline extends React.Component {
     this._grid.recomputeGridSize(config);
   };
 
-  isDraggingOutsideBounds = rect => {
-    if (!rect || !this.wrapperRef || !this.wrapperRef.current) {
-      return false;
-    }
-
-    const wrapperRect = this.wrapperRef.current.getBoundingClientRect();
-
-    return (
-      rect.right < wrapperRect.left ||
-      rect.left > wrapperRect.right ||
-      rect.bottom < wrapperRect.top ||
-      rect.top > wrapperRect.bottom
-    );
-  };
-
   setUpDragging(canSelect, canDrag, canResize) {
     // No need to setUpDragging during SSR
     if (typeof window === 'undefined') {
@@ -367,8 +349,8 @@ export default class Timeline extends React.Component {
         .draggable({
           enabled: true,
           allowFrom: selectedItemSelector,
-          restrict: {
-            restriction: this.props.restrictDragging ? `.${topDivClassId}` : false,
+          restrict: this.props.restrictDragging && {
+            restriction: `.${topDivClassId}`,
             elementRect: {left: 0, right: 1, top: 0, bottom: 1}
           },
           ...this.props.interactOptions.draggable
@@ -447,18 +429,22 @@ export default class Timeline extends React.Component {
           }
 
           let animatedItems = this._gridDomNode.querySelectorAll("span[isDragging='True'") || [];
-          if (this.props.snapBackIfDraggingOutsideBounds && this.isDraggingOutsideBounds(e.rect)) {
-            resetStyles(this.props.itemHeight);
-            return;
-          }
-
           const {item, rowNo} = this.itemFromElement(e.target);
 
           this.setSelection([[item.start, item.end]]);
           this.clearSelection();
 
           // Change row
-          let newRow = getNearestRowNumber(e.clientX, e.clientY);
+          let newRow = getNearestRowNumber(e.clientX, e.clientY, document, -1);
+          if (newRow < 0) {
+            // return without changes if snapBackIfDraggingOutsideBounds enabled and no nearest row found
+            if (this.props.snapBackIfDraggingOutsideBounds) {
+              resetStyles(this.props.itemHeight);
+              return;
+            }
+
+            newRow = 0;
+          }
 
           let rowChangeDelta = newRow - rowNo;
           // Update time
@@ -928,7 +914,7 @@ export default class Timeline extends React.Component {
       });
     }
     return (
-      <div className={divCssClass} ref={this.wrapperRef}>
+      <div className={divCssClass}>
         <AutoSizer className="rct9k-autosizer" onResize={this.refreshGrid}>
           {({height, width}) => (
             <div className="parent-div" onMouseMove={this.mouseMoveFunc}>

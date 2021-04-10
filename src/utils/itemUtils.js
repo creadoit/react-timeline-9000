@@ -191,13 +191,13 @@ export function getTrueBottom(elem) {
  * @param  {Object} topDiv Div to search under
  * @returns {number} The row number
  */
-export function getNearestRowNumber(x, y, topDiv = document) {
+export function getNearestRowNumber(x, y, topDiv = document, fallback = 0) {
   let elementsAtPixel = document.elementsFromPoint(x, y);
   let targetRow = _find(elementsAtPixel, e => {
     const inDiv = topDiv.contains(e);
     return inDiv && e.hasAttribute('data-row-index');
   });
-  return targetRow ? targetRow.getAttribute('data-row-index') : 0;
+  return targetRow ? targetRow.getAttribute('data-row-index') : fallback;
 }
 
 /**
