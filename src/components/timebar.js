@@ -217,7 +217,7 @@ export default class Timebar extends React.Component {
         <div className="rct9k-timebar-group-title" style={{width: this.props.leftOffset}}>
           <GroupTitleRenderer />
         </div>
-        <div className="rct9k-timebar-outer" style={{width: this.props.width, paddingLeft: this.props.leftOffset}}>
+        <div className="rct9k-timebar-outer" style={{width: this.props.width, paddingLeft: this.props.leftOffset - 1}}>
           <div className="rct9k-timebar-inner rct9k-timebar-inner-top">
             {topBarComponent &&
               _map(topBarComponent, i => {

@@ -1,4 +1,7 @@
 # Change Log
+## v1.3.2
+### Fixed
+- Correct right padding in timebar group title to align border
 ## v1.3.1
 ### Fixed
 - if prop 'snapBackIfDraggingOutsideBounds' is enabled, snap back to start position if dragging outside of timeline bounds
